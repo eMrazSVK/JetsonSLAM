@@ -60,9 +60,9 @@ ptr_cloud points_to_pcl(const rs2::points& points, const rs2::video_frame& color
         std::tuple<uint8_t, uint8_t, uint8_t> current_color;
         current_color = get_texcolor(color, tex_coords[i]);
 
-        cloud->points[i].r = std::get<0>(current_color);
+        cloud->points[i].r = std::get<2>(current_color);
         cloud->points[i].g = std::get<1>(current_color);
-        cloud->points[i].b = std::get<2>(current_color);
+        cloud->points[i].b = std::get<0>(current_color);
 
     }
     
@@ -99,9 +99,10 @@ int main() {
     auto frames = pipe.wait_for_frames();
     auto depth = frames.get_depth_frame();
     auto colored_frame = frames.get_color_frame();
-    auto points = pc.calculate(depth);
-    
+
     pc.map_to(colored_frame);
+    auto points = pc.calculate(depth);
+
     ptr_cloud cloud = points_to_pcl(points, colored_frame);
     pcl::io::savePCDFileASCII("cloud_test.pcd", *cloud);
 
